@@ -1,0 +1,36 @@
+{
+  "name": "v-fit-columns",
+  "version": "0.1.0",
+  "description": "A Vue.js plugin that auto fit Element UI's el-table-column with cell content.",
+  "main": "dist/index.min.js",
+  "scripts": {
+    "build": "webpack --progress --hide-modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaysonli/v-fit-columns.git"
+  },
+  "keywords": [
+    "v-fit-columns",
+    "vue",
+    "Element UI",
+    "el-table"
+  ],
+  "author": "Kayson Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kaysonli/v-fit-columns/issues"
+  },
+  "homepage": "https://github.com/kaysonli/v-fit-columns#readme",
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^4.2.2",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,6 @@
+.el-table.r-table .cell {
+  display: inline-block;
+  white-space: nowrap;
+  width: auto;
+  overflow: auto;
+}
