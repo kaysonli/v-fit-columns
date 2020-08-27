@@ -1,6 +1,6 @@
 {
   "name": "v-fit-columns",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Vue.js plugin that auto fit Element UI's el-table-column with cell content.",
   "main": "dist/index.min.js",
   "scripts": {
@@ -14,7 +14,8 @@
     "v-fit-columns",
     "vue",
     "Element UI",
-    "el-table"
+    "el-table",
+    "el-table-column宽度自适应内容"
   ],
   "author": "Kayson Li",
   "license": "MIT",
