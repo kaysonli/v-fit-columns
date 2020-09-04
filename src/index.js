@@ -1,6 +1,6 @@
 import "./styles.css";
 
-function adjustColumnWidth(table) {
+function adjustColumnWidth(table, padding = 32) {
   const colgroup = table.querySelector("colgroup");
   const colDefs = [...colgroup.querySelectorAll("col")];
   colDefs.forEach((col) => {
@@ -16,7 +16,6 @@ function adjustColumnWidth(table) {
       return el.querySelector(".cell")?.scrollWidth || 0;
     });
     const max = Math.max(...widthList);
-    const padding = 32;
     table.querySelectorAll(`col[name=${clsName}]`).forEach((el) => {
       el.setAttribute("width", max + padding);
     });
@@ -28,15 +27,15 @@ export default {
     Vue.directive("fit-columns", {
       update() {},
       bind() {},
-      inserted(el) {
+      inserted(el, binding) {
         setTimeout(() => {
-          adjustColumnWidth(el);
+          adjustColumnWidth(el, binding.value);
         }, 300);
       },
-      componentUpdated(el) {
+      componentUpdated(el, binding) {
         el.classList.add("r-table");
         setTimeout(() => {
-          adjustColumnWidth(el);
+          adjustColumnWidth(el, binding.value);
         }, 300);
       },
       unbind() {},
