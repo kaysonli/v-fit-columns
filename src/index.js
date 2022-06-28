@@ -1,92 +1,130 @@
 import './style.css'
 
-function adjustColumnWidth(table, padding = 32, some) {
+const TaskMap = {}
+
+function adjustColumnWidth(key, table, vnode, padding = 20, some) {
+  if (!table) return
   const colgroup = table.querySelector('colgroup')
   const colDefs = [...colgroup.querySelectorAll('col')]
   colDefs.forEach((col) => {
     const clsName = col.getAttribute('name')
-    const cells = [
-      ...table.querySelectorAll(`td.${clsName}`),
-      ...table.querySelectorAll(`th.${clsName}`)
-    ]
 
-    const classList = cells[0] && cells[0].classList
-    if (!classList) return
-    if (
-      some
-        ? cells[0].classList.contains('fit-column')
-        : cells[0].classList.contains('leave-alone')
-    ) {
-      const widthList = cells.map((el) => {
-        /*
-        以子元素宽度计算
-        当需要自动撑开的时候
-        对cell的子元素添加强制不换行样式
-        从而获取到实际的宽度
-        解决的问题是
-        如果第一次获取到的列表数据内容本身比较长
-        并且自动撑开了
-        如果第二次获取的数据没有这么长
-        但是列的宽度不会缩回来
-
-        In child element widths
-        When it needs to be self-propped
-        Add a forced line break style to the child elements of the cell
-        To get the actual width
-        The problem is that
-        If the first time you get the list data content itself is long
-        And it opened itself
-        If I didn't get this long the second time
-        But the width of the column does not shrink back
-         */
-        const child = el.querySelector('.cell').firstElementChild
-        return (child && Number(child.scrollWidth)) || 0
-      })
-      const max = Math.max(...widthList)
-      max > 0 &&
-        table.querySelectorAll(`col[name=${clsName}]`).forEach((el) => {
-          el.setAttribute('width', max + padding)
-        })
-    }
+    table.querySelectorAll(`col[name=${clsName}]`).forEach((item) => {
+      item.removeAttribute('lock')
+    })
+    vnode.componentInstance.layout.observers.forEach(item => {
+      item.onColumnsChange(item.tableLayout)
+    })
   })
+  if (TaskMap[key]) clearTimeout(TaskMap[key])
+  TaskMap[key] = setTimeout(() => {
+    colDefs.forEach((col) => {
+      const clsName = col.getAttribute('name')
+      const cells = [
+        ...table.querySelectorAll(`td.${clsName}`),
+        ...table.querySelectorAll(`th.${clsName}`)
+      ]
+      const classList = cells[0] && cells[0].classList
+      if (!classList) return
+      if (
+        some
+          ? cells[0].classList.contains('fit-column')
+          : cells[0].classList.contains('leave-alone')
+      ) {
+        const widthList = cells.map((el) => {
+          const cell = el.querySelector('.cell')
+          const child = cell.firstElementChild || cell
+          const width = child.getBoundingClientRect().width || 0
+          return Math.ceil(width)
+        })
+        const max = Math.max(...widthList, 100)
+        if (max > 0) {
+          table.querySelectorAll(`col[name=${clsName}]`).forEach((item) => {
+            item.setAttribute('width', max + 20)
+            item.setAttribute('lock', '')
+          })
+        }
+      }
+    })
+  }, 300)
 }
 
 export default {
   install(Vue) {
     Vue.directive('fit-columns', {
-      update() {},
-      bind() {},
-      inserted(el, binding) {
-        el.classList.add('r-table')
-        setTimeout(() => {
-          adjustColumnWidth(el, binding.value)
-        }, 300)
+      update() {
       },
-      componentUpdated(el, binding) {
-        el.classList.add('r-table')
-        setTimeout(() => {
-          adjustColumnWidth(el, binding.value)
-        }, 300)
+      bind(el, binding, vnode) {
+        vnode.componentInstance.layout.observers.forEach(item => {
+          item.onColumnsChange = function onColumnsChange(layout) {
+            layout = layout || this.tableLayout
+            var cols = this.$el.querySelectorAll('colgroup > col')
+            if (!cols.length) return
+            var flattenColumns = this.tableLayout.getFlattenColumns()
+            var columnsMap = {}
+            flattenColumns.forEach(function(column) {
+              columnsMap[column.id] = column
+            })
+            for (var i = 0, j = cols.length; i < j; i++) {
+              var col = cols[i]
+              var name = col.getAttribute('name')
+              var lock = col.hasAttribute('lock')
+              var column = columnsMap[name]
+              if (column && !lock) {
+                col.setAttribute('width', column.realWidth || column.width)
+              }
+            }
+          }
+        })
       },
-      unbind() {}
+      inserted(el, binding, vnode) {
+        el.classList.add('r-table')
+        adjustColumnWidth(vnode.key, el, vnode, binding.value)
+      },
+      componentUpdated(el, binding, vnode) {
+        el.classList.add('r-table')
+        adjustColumnWidth(vnode.key, el, vnode, binding.value)
+      },
+      unbind() {
+      }
     })
 
     Vue.directive('fit-columns-some', {
-      update() {},
-      bind() {},
-      inserted(el, binding) {
-        el.classList.add('r-table')
-        setTimeout(() => {
-          adjustColumnWidth(el, binding.value, true)
-        }, 300)
+      update() {
       },
-      componentUpdated(el, binding) {
-        el.classList.add('r-table')
-        setTimeout(() => {
-          adjustColumnWidth(el, binding.value, true)
-        }, 300)
+      bind(el, binding, vnode) {
+        vnode.componentInstance.layout.observers.forEach(item => {
+          item.onColumnsChange = function onColumnsChange(layout) {
+            layout = layout || this.tableLayout
+            var cols = this.$el.querySelectorAll('colgroup > col')
+            if (!cols.length) return
+            var flattenColumns = this.tableLayout.getFlattenColumns()
+            var columnsMap = {}
+            flattenColumns.forEach(function(column) {
+              columnsMap[column.id] = column
+            })
+            for (var i = 0, j = cols.length; i < j; i++) {
+              var col = cols[i]
+              var name = col.getAttribute('name')
+              var lock = col.hasAttribute('lock')
+              var column = columnsMap[name]
+              if (column && !lock) {
+                col.setAttribute('width', column.realWidth || column.width)
+              }
+            }
+          }
+        })
       },
-      unbind() {}
+      inserted(el, binding, vnode) {
+        el.classList.add('r-table')
+        adjustColumnWidth(vnode.key, el, vnode, binding.value, true)
+      },
+      componentUpdated(el, binding, vnode) {
+        el.classList.add('r-table')
+        adjustColumnWidth(vnode.key, el, vnode, binding.value, true)
+      },
+      unbind() {
+      }
     })
   }
 }
