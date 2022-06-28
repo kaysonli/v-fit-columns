@@ -4,11 +4,11 @@
   width: auto;
   overflow-y: hidden;
   overflow-x: auto;
+}
 
-  > * {
-    width: auto;
-    width: max-content;
-    margin: 0 auto;
-    white-space: nowrap;
-  }
+.el-table.r-table .cell > * {
+  width: auto;
+  width: max-content;
+  margin: 0 auto;
+  white-space: nowrap;
 }
